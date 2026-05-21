@@ -26,3 +26,5 @@ allure-report/
 # Test artifacts
 screenshots/
 videos/
+
+graphify-out/

@@ -9,18 +9,14 @@ fake = Faker()
 def generate_contact() -> dict:
     """
     Generate realistic random contact data for Odoo Contacts module.
-
     Returns a dictionary with all fields needed to create a contact.
     Every call returns completely different data — no conflicts between tests.
 
     Returns:
         dict: contact data with name, email, phone, mobile, company
     """
-    # Use fake.first_name() + fake.last_name() separately
-    # so we have both parts available if needed
     first_name = fake.first_name()
     last_name = fake.last_name()
-
     return {
         "name": f"{first_name} {last_name}",
         "email": f"{first_name.lower()}.{last_name.lower()}"
@@ -35,17 +31,20 @@ def generate_contact() -> dict:
 
 def generate_lead() -> dict:
     """
-    Generate realistic random CRM lead data for Odoo CRM module.
+    Generate realistic random lead data for CRM tests.
+    Each test run gets unique customer name, opportunity title,
+    and expected revenue.
 
     Returns:
-        dict: lead data with name, contact_name, email, phone
+        dict: lead data with customer, opportunity, revenue, lost_reason
     """
+    customer_id = fake.random_int(min=100, max=9999)
+    opportunity_id = fake.random_int(min=1, max=999)
     return {
-        "name": f"{fake.bs().title()} Opportunity",
-        "contact_name": fake.name(),
-        "email": fake.company_email(),
-        "phone": fake.numerify("+49 ### #######"),
-        "company": fake.company(),
+        "customer": (f"{fake.first_name()} {fake.last_name()} {customer_id}"),
+        "opportunity": (f"{fake.bs().title()} Lead {opportunity_id}"),
+        "expected_revenue": str(fake.random_int(min=1000, max=50000)),
+        "lost_reason": "Not enough stock",
     }
 
 

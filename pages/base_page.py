@@ -54,7 +54,7 @@ class BasePage:
         """
         Assert that an element is visible on the page.
         Uses Playwright's expect() which has built-in
-        auto-waiting — it retries until the element appears
+        auto-waiting it retries until the element appears
         or the timeout is reached. No sleep() needed.
         """
         expect(self.page.locator(locator)).to_be_visible(timeout=self.timeout)
@@ -63,7 +63,7 @@ class BasePage:
     def assert_text(self, locator: str, expected: str):
         """
         Assert that an element contains specific text.
-        Uses contains — partial match is fine.
+        Uses contains partial match is fine.
         'Submit Order' passes if element says 'Submit Order Now'.
         """
         expect(self.page.locator(locator)).to_contain_text(
@@ -74,7 +74,7 @@ class BasePage:
     def assert_hidden(self, locator: str):
         """
         Assert that an element is NOT visible.
-        Used for negative tests — error messages should
+        Used for negative tests error messages should
         not appear after a successful action.
         """
         expect(self.page.locator(locator)).to_be_hidden(timeout=self.timeout)
@@ -84,7 +84,7 @@ class BasePage:
         """
         Read the text content of an element and return it.
         Used when you need to verify a value that changes
-        dynamically — like an order number or a total price.
+        dynamically like an order number or a total price.
         """
         return self.page.locator(locator).inner_text()
 
@@ -93,7 +93,7 @@ class BasePage:
         """
         Wait until the browser URL contains a specific string.
         Used after clicking buttons that trigger navigation.
-        Safer than sleeping — stops waiting as soon as URL matches.
+        Safer than sleeping stops waiting as soon as URL matches.
         """
         self.page.wait_for_url(f"**{url_part}**", timeout=self.timeout)
 
@@ -101,7 +101,7 @@ class BasePage:
         """
         Manually take a screenshot and attach to Allure.
         Called explicitly when you want to capture a specific
-        moment — not just on failure.
+        moment not just on failure.
         The conftest.py hook handles failure screenshots automatically.
         """
         allure.attach(

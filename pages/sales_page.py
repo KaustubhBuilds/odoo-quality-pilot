@@ -9,7 +9,7 @@ from pages.base_page import BasePage
 class SalesPage(BasePage):
     """
     Page object for Odoo Sales module.
-    Tests the quotation → sales order workflow.
+    Tests the quotation sales order workflow.
     All selectors verified from Playwright Inspector recording.
     """
 
@@ -19,8 +19,8 @@ class SalesPage(BasePage):
     @allure.step("Navigate to Sales Quotations list")
     def go_to_quotations(self):
         """
-        Navigate via menu: Home Menu → Sales.
-        Professional approach — no database IDs.
+        Navigate via menu: Home Menu - Sales.
+        Professional approach - no database IDs.
         Works across any Odoo environment.
         """
         self.page.get_by_title("Home Menu").click()
