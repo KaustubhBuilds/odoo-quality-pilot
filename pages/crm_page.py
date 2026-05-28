@@ -57,7 +57,7 @@ class CRMPage(BasePage):
         """Fills the Expected Revenue field."""
         self.page.get_by_role("textbox", name="Expected Revenue").fill(amount)
 
-    @allure.step("Save lead — click Add button")
+    @allure.step("Save lead click Add button")
     def save_lead(self):
         """
         Clicks Add button to save the inline lead form.
