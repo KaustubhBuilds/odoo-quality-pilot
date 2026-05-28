@@ -17,7 +17,7 @@ class CRMPage(BasePage):
     @allure.step("Navigate to CRM pipeline")
     def go_to_crm(self):
         """
-        Navigate via Home Menu → CRM.
+        Navigate via Home Menu - CRM.
         Professional approach — no database IDs.
         """
         self.page.get_by_title("Home Menu").click()

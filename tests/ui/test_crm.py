@@ -100,7 +100,7 @@ class TestCRM:
     def test_full_pipeline_flow(self, logged_in_page):
         """
         End-to-end happy path test.
-        Tests complete lead journey: Create → Qualified → Won.
+        Tests complete lead journey: Create - Qualified - Won.
         Demonstrates the full business workflow works as
         an integrated system.
         """
