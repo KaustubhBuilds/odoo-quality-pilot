@@ -2,9 +2,9 @@
 Combined API + UI tests.
 
 The professional hybrid pattern:
-- Setup data via API (fast — milliseconds)
+- Setup data via API (fast milliseconds)
 - Verify in UI (only when browser check is needed)
-- Cleanup via API (fast — no browser interaction)
+- Cleanup via API (fast no browser interaction)
 """
 
 import allure

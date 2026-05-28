@@ -34,10 +34,10 @@ class OdooClient:
         self.username = settings.ODOO_USER
         self.password = settings.ODOO_PASSWORD
 
-        # The JSON-RPC endpoint — all API calls go here
+        # The JSON-RPC endpoint all API calls go here
         self.url = f"{self.base_url}/jsonrpc"
 
-        # User ID — set after authentication
+        # User ID set after authentication
         # None means "not logged in yet"
         self.uid = None
 

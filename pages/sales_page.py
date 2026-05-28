@@ -67,7 +67,7 @@ class SalesPage(BasePage):
         Click Confirm button on the quotation form.
         After confirmation, the quotation becomes a Sales Order.
         """
-        self.page.get_by_role("button", name="Confirm").click()
+        self.page.get_by_role("button", name="Confirm", exact=True).click()
         self.page.wait_for_load_state("domcontentloaded")
 
     @allure.step("Cancel current Sales Order")
