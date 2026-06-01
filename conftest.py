@@ -7,11 +7,8 @@ from config.settings import settings
 
 @pytest.fixture(scope="session")
 def browser_instance():
-    """
-    Session-scoped: browser starts ONCE for the entire test run.
-    Starting a browser takes ~2 seconds. With 30 tests, session scope
-    saves ~60 seconds compared to restarting the browser every test.
-    """
+    """Launch browser once for the entire test session."""
+
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(
             headless=settings.HEADLESS,
@@ -23,11 +20,8 @@ def browser_instance():
 
 @pytest.fixture(scope="function")
 def page(browser_instance):
-    """
-    Function-scoped: every test gets a FRESH browser context.
-    This is test isolation one test's cookies, session, and
-    storage never bleed into another test.
-    """
+    """Fresh browser context per test which ensures test isolation."""
+
     context = browser_instance.new_context(
         base_url=settings.BASE_URL,
         viewport={"width": 1920, "height": 1080},
@@ -39,12 +33,7 @@ def page(browser_instance):
 
 @pytest.fixture(scope="function")
 def logged_in_page(page):
-    """
-    Pre-authenticated page fixture.
-    Tests that need a logged-in state use this instead of 'page'.
-    Login happens automatically before the test body runs.
-    Avoids repeating login code in every single test.
-    """
+    """Pre-authenticated page. Logs in before each test."""
     from pages.login_page import LoginPage
 
     login = LoginPage(page)
@@ -56,11 +45,8 @@ def logged_in_page(page):
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
-    """
-    Runs automatically after every test.
-    If a test fails, takes a screenshot and attaches it to Allure.
-    You never have to manually add screenshot code to any test.
-    """
+    """Auto-capture screenshot on test failure for Allure report."""
+
     outcome = yield
     report = outcome.get_result()
 

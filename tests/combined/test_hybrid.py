@@ -1,11 +1,4 @@
-"""
-Combined API + UI tests.
-
-The professional hybrid pattern:
-- Setup data via API (fast milliseconds)
-- Verify in UI (only when browser check is needed)
-- Cleanup via API (fast no browser interaction)
-"""
+"""Combined API + UI tests. API handles setup/cleanup, UI handles verification."""
 
 import allure
 import pytest
@@ -21,12 +14,8 @@ class TestHybrid:
     @allure.story("Contact created via API appears in UI")
     @allure.title("API-created contact is visible in Contacts list")
     def test_api_contact_visible_in_ui(self, api_client, logged_in_page):
-        """
-        1. Create contact via API (instant)
-        2. Use ContactsPage to navigate and search (verified selectors)
-        3. Verify it appears in the list
-        4. Cleanup via API (instant)
-        """
+        """API creates contact, UI verifies it appears in contacts list."""
+
         data = generate_contact()
 
         # --- API SETUP ---
@@ -48,10 +37,8 @@ class TestHybrid:
     @allure.story("Lead created via API appears in CRM pipeline")
     @allure.title("API-created lead is visible in CRM Kanban")
     def test_api_lead_visible_in_crm(self, api_client, logged_in_page):
-        """
-        Create a CRM lead via API, verify it appears in
-        the Kanban pipeline in the browser.
-        """
+        """API creates lead, UI verifies it appears in CRM pipeline."""
+
         data = generate_lead()
 
         # --- API SETUP ---
@@ -82,12 +69,8 @@ class TestHybrid:
     @allure.story("UI-created contact verifiable via API")
     @allure.title("Contact created in browser exists in API")
     def test_ui_contact_verified_via_api(self, api_client, logged_in_page):
-        """
-        1. Create contact via UI using ContactsPage
-        2. Navigate back to list (triggers full save in Odoo)
-        3. Verify via API that the contact exists in the database
-        4. Cleanup via API
-        """
+        """UI creates contact, API verifies it exists in database."""
+
         data = generate_contact()
 
         # --- UI ACTION ---

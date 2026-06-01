@@ -6,23 +6,15 @@ from pages.base_page import BasePage
 
 
 class ContactsPage(BasePage):
-    """
-    Page object for Odoo Contacts module.
-    ALL selectors verified using Playwright Inspector
-    on real Odoo 17 instance.
-    """
+    """Page object for Odoo Contacts module."""
 
     def __init__(self, page: Page):
         super().__init__(page)
 
     @allure.step("Navigate to Contacts list")
     def go_to_contacts(self):
-        """
-        Navigate directly to contacts LIST view using URL.
-        More reliable than menu navigation + view switching.
-        URL confirmed from real browser session.
-        action=340 is stable on this Docker instance.
-        """
+        """Navigate to contacts list view. Direct URL is more stable than menu nav."""
+
         self.navigate(
             f"{settings.BASE_URL}/web#action=340"
             f"&model=res.partner&view_type=list&cids=1&menu_id=226"

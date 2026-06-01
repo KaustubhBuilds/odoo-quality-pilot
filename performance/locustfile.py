@@ -1,29 +1,16 @@
 """
-Locust performance tests for Odoo ERP.
-
-Simulates real user behavior against Odoo to measure
-response times, throughput, and error rates under load.
+Locust load tests for Odoo ERP.
 
 Usage:
     locust -f performance/locustfile.py --host=http://localhost:8069
-
-Then open http://localhost:8089 for the Locust dashboard.
+    Open http://localhost:8089 for the dashboard.
 """
 
 from locust import HttpUser, between, task
 
 
 class OdooUser(HttpUser):
-    """
-    Simulated Odoo user.
-
-    Each instance represents one person using the system.
-    When Locust spawns 50 users, it creates 50 of these
-    all hitting Odoo simultaneously.
-
-    wait_time = between(1, 3) means each user waits 1-3 seconds
-    between actions, simulating real human behavior.
-    """
+    """Simulated Odoo user with weighted task distribution."""
 
     wait_time = between(1, 3)
 
@@ -33,11 +20,8 @@ class OdooUser(HttpUser):
     password = "admin"
 
     def on_start(self):
-        """
-        Runs once when the simulated user starts.
-        Logs into Odoo and stores the session.
-        Every subsequent request uses this session automatically.
-        """
+        """Authenticate with Odoo on user spawn."""
+
         response = self.client.post(
             "/web/session/authenticate",
             json={
@@ -56,11 +40,8 @@ class OdooUser(HttpUser):
             raise Exception("Login failed during load test")
 
     def _jsonrpc_call(self, model, method, args, name):
-        """
-        Helper to make JSON-RPC calls to Odoo.
-        Same format as our OdooClient but via Locust's HTTP client
-        so response times are tracked automatically.
-        """
+        """Send a JSON-RPC call via Locust's tracked HTTP client."""
+
         response = self.client.post(
             "/jsonrpc",
             json={
@@ -87,10 +68,8 @@ class OdooUser(HttpUser):
 
     @task(3)
     def browse_contacts(self):
-        """
-        Most common action, loading the contacts list.
-        Weight 3 = runs 3x more than weight 1 tasks.
-        """
+        """Load contacts list, most frequent action."""
+
         self._jsonrpc_call(
             "res.partner",
             "search_read",
@@ -100,10 +79,8 @@ class OdooUser(HttpUser):
 
     @task(2)
     def search_contacts(self):
-        """
-        Search for contacts by name.
-        Simulates a user typing in the search bar.
-        """
+        """Search contacts by name."""
+
         self._jsonrpc_call(
             "res.partner",
             "search_read",
@@ -116,9 +93,8 @@ class OdooUser(HttpUser):
 
     @task(2)
     def browse_sales(self):
-        """
-        Load the sales quotations list.
-        """
+        """Load sales quotations list."""
+
         self._jsonrpc_call(
             "sale.order",
             "search_read",
@@ -136,10 +112,8 @@ class OdooUser(HttpUser):
 
     @task(2)
     def read_contact_api(self):
-        """
-        Read a specific contact's details.
-        Simulates clicking on a contact to view their info.
-        """
+        """Find and read a single contact's details."""
+
         # First find a contact
         search_response = self._jsonrpc_call(
             "res.partner",
@@ -162,11 +136,7 @@ class OdooUser(HttpUser):
 
     @task(1)
     def create_and_delete_contact(self):
-        """
-        Create a contact then immediately delete it.
-        Least frequent task (weight 1).
-        Cleanup prevents database pollution during load tests.
-        """
+        """Create then delete a contact, least frequent action."""
         import random
         import string
 

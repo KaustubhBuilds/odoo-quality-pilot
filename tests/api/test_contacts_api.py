@@ -1,11 +1,4 @@
-"""
-API tests for Odoo Contacts (res.partner model).
-
-These test the same CRUD operations as the UI tests,
-but through the API no browser, runs in seconds.
-
-Each test creates its own data and cleans up after itself.
-"""
+"""API tests for Odoo Contacts via JSON-RPC."""
 
 import allure
 import pytest

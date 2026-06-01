@@ -1,9 +1,4 @@
-"""
-Combined test fixtures.
-
-Provides an authenticated API client alongside the
-logged_in_page fixture from root conftest.
-"""
+"""Combined test fixtures."""
 
 import pytest
 

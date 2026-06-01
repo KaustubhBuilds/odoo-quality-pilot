@@ -45,16 +45,8 @@ Do NOT use Faker directly. Do NOT invent methods that don't exist.
 
 
 def generate_tests(page_object_path: str) -> str:
-    """
-    Read a page object file and generate test cases using AI.
+    """Read a page object file and generate test cases using AI."""
 
-    Args:
-        page_object_path: Path to the page object Python file
-
-    Returns:
-        Generated test code as a string
-    """
-    # Read the page object source code
     with open(page_object_path) as f:
         page_code = f.read()
 
