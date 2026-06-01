@@ -1,91 +1,94 @@
 import allure
 import pytest
-from faker import Faker
 
 from pages.crm_page import CRMPage
-from utils.data_factory import Faker as DataFaker
-
-fake = Faker()
+from utils.data_factory import generate_lead
 
 
-@pytest.mark.ui
 @allure.epic("CRM")
-@allure.feature("Lead pipeline")
-@allure.story("Create and manage leads")
-@allure.title("Happy path: create a new CRM lead and verify it appears in the pipeline")
-def test_create_new_lead_happy_path_logged_in_page(logged_in_page):
-    """
-    Verify that a user can create a new CRM lead with valid data and see it
-    displayed in the pipeline after saving.
-    """
-    crm_page = CRMPage(logged_in_page)
+@allure.feature("Lead Pipeline")
+class TestCRMPage:
+    @pytest.mark.ui
+    @allure.story("Create lead")
+    @allure.title("Create a new lead with valid customer, opportunity, and revenue")
+    def test_create_lead_happy_path(self, logged_in_page):
+        """Verify that a lead can be created successfully and appears in the CRM pipeline."""
+        crm = CRMPage(logged_in_page)
+        data = generate_lead()
 
-    customer_name = DataFaker.customer_name()
-    opportunity_title = fake.sentence(nb_words=4).rstrip(".")
-    expected_revenue = str(fake.random_int(min=1000, max=99999))
+        crm.go_to_crm()
+        crm.click_new()
+        crm.fill_customer(data["customer"])
+        crm.fill_opportunity(data["opportunity"])
+        crm.fill_expected_revenue(data["expected_revenue"])
+        crm.save_lead()
 
-    crm_page.go_to_crm()
-    crm_page.click_new()
-    crm_page.fill_customer(customer_name)
-    crm_page.fill_opportunity(opportunity_title)
-    crm_page.fill_expected_revenue(expected_revenue)
-    crm_page.save_lead()
+        crm.assert_lead_visible(data["opportunity"])
 
-    crm_page.assert_lead_visible(opportunity_title)
+    @pytest.mark.ui
+    @allure.story("Lead lifecycle")
+    @allure.title("Move an existing lead to Won status")
+    def test_mark_lead_as_won(self, logged_in_page):
+        """Verify that an existing lead can be opened and marked as Won from the form view."""
+        crm = CRMPage(logged_in_page)
+        data = generate_lead()
 
+        crm.go_to_crm()
+        crm.click_new()
+        crm.fill_customer(data["customer"])
+        crm.fill_opportunity(data["opportunity"])
+        crm.fill_expected_revenue(data["expected_revenue"])
+        crm.save_lead()
+        crm.open_lead(data["opportunity"])
+        crm.mark_as_won()
+        crm.assert_status("Won")
 
-@pytest.mark.ui
-@allure.epic("CRM")
-@allure.feature("Lead pipeline")
-@allure.story("Create and manage leads")
-@allure.title(
-    "Negative path: create lead with invalid revenue and verify validation prevents save"
-)
-def test_create_lead_invalid_expected_revenue_logged_in_page(logged_in_page):
-    """
-    Verify that the CRM lead form does not accept a non-numeric expected revenue
-    value and the lead is not created successfully.
-    """
-    crm_page = CRMPage(logged_in_page)
+    @pytest.mark.ui
+    @allure.story("Lead validation")
+    @allure.title("Prevent saving a lead when required fields are incomplete")
+    def test_save_lead_without_required_fields(self, logged_in_page):
+        """Verify that saving an inline lead without required details does not create a visible lead."""
+        crm = CRMPage(logged_in_page)
+        data = generate_lead()
 
-    customer_name = DataFaker.customer_name()
-    opportunity_title = fake.sentence(nb_words=3).rstrip(".")
-    invalid_revenue = fake.word()
+        crm.go_to_crm()
+        crm.click_new()
+        crm.fill_customer(data["customer"])
+        crm.save_lead()
 
-    crm_page.go_to_crm()
-    crm_page.click_new()
-    crm_page.fill_customer(customer_name)
-    crm_page.fill_opportunity(opportunity_title)
-    crm_page.fill_expected_revenue(invalid_revenue)
+        with pytest.raises(AssertionError):
+            crm.assert_lead_visible(data["opportunity"])
 
-    with pytest.raises(AssertionError):
-        crm_page.save_lead()
-        crm_page.assert_lead_visible(opportunity_title)
+    @pytest.mark.ui
+    @allure.story("Lead lifecycle")
+    @allure.title("Mark a lead as Lost using a valid lost reason")
+    def test_mark_lead_as_lost(self, logged_in_page):
+        """Verify that an existing lead can be marked as Lost with a selected reason."""
+        crm = CRMPage(logged_in_page)
+        data = generate_lead()
 
+        crm.go_to_crm()
+        crm.click_new()
+        crm.fill_customer(data["customer"])
+        crm.fill_opportunity(data["opportunity"])
+        crm.fill_expected_revenue(data["expected_revenue"])
+        crm.save_lead()
+        crm.open_lead(data["opportunity"])
+        crm.mark_as_lost(data["lost_reason"])
 
-@pytest.mark.ui
-@allure.epic("CRM")
-@allure.feature("Lead pipeline")
-@allure.story("Create and manage leads")
-@allure.title(
-    "Edge case: create lead with minimal boundary data and verify pipeline accepts it"
-)
-def test_create_lead_with_minimum_boundary_values_logged_in_page(logged_in_page):
-    """
-    Verify that the CRM lead form accepts minimal valid boundary data such as
-    a one-character opportunity title and a minimum revenue value.
-    """
-    crm_page = CRMPage(logged_in_page)
+    @pytest.mark.ui
+    @allure.story("Lead creation")
+    @allure.title("Create a lead with an empty expected revenue value")
+    def test_create_lead_with_empty_expected_revenue(self, logged_in_page):
+        """Verify that a lead can be created with an empty expected revenue field and still appears in the pipeline."""
+        crm = CRMPage(logged_in_page)
+        data = generate_lead()
 
-    customer_name = DataFaker.customer_name()
-    opportunity_title = "A"
-    expected_revenue = "0"
+        crm.go_to_crm()
+        crm.click_new()
+        crm.fill_customer(data["customer"])
+        crm.fill_opportunity(data["opportunity"])
+        crm.fill_expected_revenue("")
+        crm.save_lead()
 
-    crm_page.go_to_crm()
-    crm_page.click_new()
-    crm_page.fill_customer(customer_name)
-    crm_page.fill_opportunity(opportunity_title)
-    crm_page.fill_expected_revenue(expected_revenue)
-    crm_page.save_lead()
-
-    crm_page.assert_lead_visible(opportunity_title)
+        crm.assert_lead_visible(data["opportunity"])
