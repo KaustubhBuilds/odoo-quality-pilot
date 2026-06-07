@@ -57,10 +57,7 @@ class CRMPage(BasePage):
 
     @allure.step("Open lead: {title}")
     def open_lead(self, title: str):
-        """Open lead via kanban view (re-navigate for clean state)."""
-        # Navigate back to CRM kanban to ensure we're not in inline-edit state
-        self.page.get_by_role("menuitem", name="CRM").click()
-        self.page.wait_for_load_state("domcontentloaded")
+        """Click on lead in Kanban view to open its full form."""
         self.page.get_by_text(title).first.click()
         self.page.wait_for_load_state("domcontentloaded")
 
