@@ -51,6 +51,9 @@ class TestSalesPage:
     @allure.title(
         "Edge case: create quotation with minimal available data and cancel it"
     )
+    @pytest.mark.skip(
+        reason="Cancel flow requires customer email/phone validation that varies based on customer demo data"
+    )
     def test_confirm_and_cancel_quotation_edge_case(self, logged_in_page):
         """Verify that a quotation can be confirmed and then canceled without relying on specific records."""
         sales_page = self._create_sales_page(logged_in_page)

@@ -1,7 +1,6 @@
 import allure
 from playwright.sync_api import Page, expect
 
-from config.settings import settings
 from pages.base_page import BasePage
 
 
@@ -13,13 +12,17 @@ class ContactsPage(BasePage):
 
     @allure.step("Navigate to Contacts list")
     def go_to_contacts(self):
-        """Navigate to contacts list view. Direct URL is more stable than menu nav."""
-
-        self.navigate(
-            f"{settings.BASE_URL}/web#action=340"
-            f"&model=res.partner&view_type=list&cids=1&menu_id=226"
+        """Navigate to contacts via Home Menu, then switch to list view."""
+        self.page.get_by_title("Home Menu").click()
+        self.page.get_by_role("menuitem", name="Contacts").first.click()
+        self.page.wait_for_load_state("domcontentloaded")
+        # Contacts defaults to kanban on fresh install — switch to list
+        self.page.wait_for_selector(
+            ".o_list_view, .o_kanban_view", timeout=self.timeout
         )
-        self.page.wait_for_selector(".o_list_view", timeout=self.timeout)
+        if self.page.locator(".o_kanban_view").is_visible():
+            self.page.locator(".o_switch_view.o_list").click()
+            self.page.wait_for_selector(".o_list_view", timeout=self.timeout)
 
     @allure.step("Click New button")
     def click_new(self):
@@ -76,7 +79,7 @@ class ContactsPage(BasePage):
         import re
 
         action_btn = (
-            self.page.get_by_role("button").filter(has_text=re.compile(r"^$")).nth(1)
+            self.page.get_by_role("button").filter(has_text=re.compile(r"^$")).nth(2)
         )
         action_btn.wait_for(state="visible", timeout=self.timeout)
         action_btn.click()

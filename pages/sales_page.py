@@ -60,8 +60,7 @@ class SalesPage(BasePage):
     def cancel_order(self):
         """Cancel order. Two-step: button click + modal confirmation."""
 
-        self.page.get_by_role("button", name="Cancel").click()
-        self.page.locator("#dialog_0").get_by_role(
+        self.page.locator(".modal-footer").get_by_role(
             "button", name="Cancel", exact=True
         ).click()
         self.page.wait_for_load_state("domcontentloaded")

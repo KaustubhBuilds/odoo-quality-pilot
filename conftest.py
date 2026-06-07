@@ -34,6 +34,21 @@ def page(browser_instance):
 @pytest.fixture(scope="function")
 def logged_in_page(page):
     """Pre-authenticated page. Logs in before each test."""
+    # Auto-dismiss Odoo onboarding tours on every page load
+    page.add_init_script("""
+        const observer = new MutationObserver(() => {
+            document.querySelectorAll(
+                '.o_tour_pointer, .o_tour_pointer_tip'
+            ).forEach(el => el.remove());
+        });
+        if (document.body) {
+            observer.observe(document.body, { childList: true, subtree: true });
+        } else {
+            document.addEventListener('DOMContentLoaded', () => {
+                observer.observe(document.body, { childList: true, subtree: true });
+            });
+        }
+    """)
     from pages.login_page import LoginPage
 
     login = LoginPage(page)
