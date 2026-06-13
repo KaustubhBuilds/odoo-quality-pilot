@@ -37,6 +37,17 @@ class SalesPage(BasePage):
         self.page.wait_for_timeout(500)
         self.page.get_by_role("option").first.click()
 
+    @allure.step("Select customer by name: {name}")
+    def select_customer_by_name(self, name: str):
+        """Select a specific customer by typing their name in the dropdown."""
+        customer_combo = self.page.get_by_role(
+            "combobox", name="Type to find a customer..."
+        )
+        customer_combo.click()
+        customer_combo.fill(name)
+        self.page.wait_for_timeout(500)
+        self.page.get_by_role("option", name=name).first.click()
+
     @allure.step("Add first available product")
     def add_product(self):
         """Add first available product to order lines"""
@@ -49,6 +60,18 @@ class SalesPage(BasePage):
         self.page.wait_for_timeout(500)
         self.page.get_by_role("option").first.click()
 
+    @allure.step("Add product '{name}' to order line")
+    def add_product_by_name(self, name: str):
+        """Add a specific product (by name) to order lines."""
+        self.page.get_by_role("button", name="Add a product").click()
+        product_combo = self.page.get_by_role(
+            "combobox", name="Type to find a product..."
+        )
+        product_combo.click()
+        product_combo.fill(name)
+        self.page.wait_for_timeout(500)
+        self.page.get_by_role("option", name=name).first.click()
+
     @allure.step("Confirm quotation converts to Sales Order")
     def confirm_quotation(self):
         """Confirm quotation which converts it to a Sales Order."""
@@ -58,12 +81,29 @@ class SalesPage(BasePage):
 
     @allure.step("Cancel current Sales Order")
     def cancel_order(self):
-        """Cancel order. Two-step: button click + modal confirmation."""
+        """Cancel order: wait for sale state, click Cancel, handle optional dialog."""
 
-        self.page.locator(".modal-footer").get_by_role(
-            "button", name="Cancel", exact=True
-        ).click()
-        self.page.wait_for_load_state("domcontentloaded")
+        # Step 1: Ensure order is fully in "Sales Order" state (confirm fully processed)
+        self.page.locator(".o_arrow_button_current[data-value='sale']").wait_for(
+            state="visible", timeout=10000
+        )
+
+        # Step 2: Click the form's Cancel button
+        cancel_btn = self.page.locator('button[name="action_cancel"]')
+        cancel_btn.wait_for(state="visible", timeout=5000)
+        cancel_btn.scroll_into_view_if_needed()
+        cancel_btn.click()
+
+        # Step 3: Optional dialog (appears only if customer is mail follower)
+        self.page.wait_for_timeout(2000)
+        dialog_btn = self.page.locator(".modal-footer button[name='action_cancel']")
+        if dialog_btn.is_visible():
+            dialog_btn.click()
+
+        # Step 4: Wait for cancelled status
+        self.page.locator(".o_arrow_button_current[data-value='cancel']").wait_for(
+            state="visible", timeout=15000
+        )
 
     @allure.step("Open quotation: {reference}")
     def open_quotation(self, reference: str):

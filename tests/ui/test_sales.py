@@ -24,10 +24,6 @@ class TestSales:
     @pytest.mark.ui
     @allure.story("Confirm quotation to Sales Order")
     @allure.title("Confirming a quotation converts it to Sales Order")
-    @pytest.mark.skip(
-        reason="Delivery button appearance depends on first product type in demo data "
-        "(storable vs service). Demo data ordering varies on fresh installs."
-    )
     def test_confirm_quotation_to_order(self, logged_in_page):
         sales = SalesPage(logged_in_page)
 
@@ -58,14 +54,24 @@ class TestSales:
     @allure.story("Cancel sales order")
     @allure.title("Confirmed Sales Order can be cancelled")
     @pytest.mark.skip(
-        reason="Cancel flow requires customer email/phone validation that varies based on customer demo data"
+        reason=(
+            "v1.0.2 attempted API customer fixture (customer_with_contact_info) to "
+            "replace demo data dependency. Customer creation + selection works, but "
+            "cancel action does not complete for API-created customers even with "
+            "email+phone. Form Cancel button click fires correctly (verified via "
+            "DevTools: 1 match, visible, name='action_cancel'), order is in 'sale' "
+            "state, but no confirmation dialog appears and status does not transition "
+            "to 'cancel'. Root cause likely involves mail follower subscription "
+            "(message_subscribe) which UI-created customers get automatically but "
+            "API-created ones do not. Deferred to v1.0.3."
+        )
     )
-    def test_cancel_sales_order(self, logged_in_page):
+    def test_cancel_sales_order(self, logged_in_page, customer_with_contact_info):
         sales = SalesPage(logged_in_page)
 
         sales.go_to_quotations()
         sales.click_new()
-        sales.select_customer()
+        sales.select_customer_by_name(customer_with_contact_info["name"])
         sales.add_product()
         sales.confirm_quotation()
         sales.assert_status("Sales Order")

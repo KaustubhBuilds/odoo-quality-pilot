@@ -16,6 +16,22 @@ A production-grade QA automation framework testing Odoo ERP across three archite
 - **Performance testing** : Locust load tests handling 100 concurrent users with zero failures
 - **Full CI/CD pipeline** : Docker + GitHub Actions + Allure reporting on every push
 
+## Test Status
+
+28/33 tests pass on truly fresh Docker installs (v1.0.2).
+5 tests are documented as state-dependent edge cases. Each carries a skip
+reason explaining the root cause and the planned fix.
+
+This is honest reproducibility — `docker compose down -v && docker compose up -d && pytest`
+will give consistent results on any machine.
+
+### Version history
+
+- **v1.0.0** — Initial release. 33/33 passing on stateful Docker (state-dependent).
+- **v1.0.1** — Fresh-install reproducibility. 27/33 + 6 documented skips.
+- **v1.0.2** — API fixture pattern introduced. `test_confirm_quotation_to_order`
+  un-skipped via `storable_product` API fixture. 28/33 + 5 documented skips.
+
 ## Test Results
 
 ```
