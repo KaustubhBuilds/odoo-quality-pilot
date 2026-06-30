@@ -3,7 +3,7 @@
 [![CI](https://github.com/KaustubhBuilds/odoo-quality-pilot/actions/workflows/ci.yml/badge.svg)](https://github.com/KaustubhBuilds/odoo-quality-pilot/actions)
 ![Python](https://img.shields.io/badge/python-3.12-blue)
 ![Playwright](https://img.shields.io/badge/playwright-1.59-green)
-![Tests](https://img.shields.io/badge/tests-33%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-28%20passing-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 A production-grade QA automation framework testing Odoo ERP across three architectural layers: UI, API, and hybrid with AI-powered test generation and performance load testing.
