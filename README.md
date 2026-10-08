@@ -35,7 +35,7 @@ will give consistent results on any machine.
 ## Test Results
 
 ```
-33 tests | 0 failures | 3 test layers | 4 ERP modules
+28 passing | 5 documented skips | 3 test layers | 4 ERP modules
 ```
 
 | Layer           | Tests | Speed      | What it covers                                     |
